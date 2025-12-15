@@ -43,21 +43,31 @@ char* read_as_string(int day, const char* name) {
 }
 
 int count_lines(const char* str) {
+    if (!str || !*str) return 0;
+
     int count = 0;
     for (const char* p = str; *p; p++) {
         if (*p == '\n') count++;
     }
     // Count last line if it doesn't end with newline
-    if (str[0] && str[strlen(str) - 1] != '\n') count++;
+    size_t len = strlen(str);
+    if (len > 0 && str[len - 1] != '\n') count++;
     return count;
 }
 
 char** split_lines(const char* str, int* count) {
-    *count = count_lines(str);
-    if (*count == 0) return NULL;
+    if (!str || !*str) {
+        *count = 0;
+        return NULL;
+    }
 
-    char** lines = malloc(*count * sizeof(char*));
-    if (!lines) return NULL;
+    // First pass: count actual lines
+    int capacity = 16;
+    char** lines = malloc(capacity * sizeof(char*));
+    if (!lines) {
+        *count = 0;
+        return NULL;
+    }
 
     const char* start = str;
     int idx = 0;
@@ -65,6 +75,22 @@ char** split_lines(const char* str, int* count) {
     for (const char* p = str; ; p++) {
         if (*p == '\n' || *p == '\0') {
             size_t len = p - start;
+
+            // Skip empty lines at the end
+            if (len == 0 && *p == '\0') break;
+
+            // Grow array if needed
+            if (idx >= capacity) {
+                capacity *= 2;
+                char** new_lines = realloc(lines, capacity * sizeof(char*));
+                if (!new_lines) {
+                    free_lines(lines, idx);
+                    *count = 0;
+                    return NULL;
+                }
+                lines = new_lines;
+            }
+
             lines[idx] = malloc(len + 1);
             if (lines[idx]) {
                 memcpy(lines[idx], start, len);
@@ -76,12 +102,13 @@ char** split_lines(const char* str, int* count) {
         }
     }
 
-    // Adjust count if we have trailing newlines
-    while (*count > 0 && lines[*count - 1][0] == '\0') {
-        free(lines[*count - 1]);
-        (*count)--;
+    // Remove trailing empty lines
+    while (idx > 0 && lines[idx - 1][0] == '\0') {
+        free(lines[idx - 1]);
+        idx--;
     }
 
+    *count = idx;
     return lines;
 }
 
