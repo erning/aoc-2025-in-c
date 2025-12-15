@@ -1,4 +1,4 @@
-// Day 1: Historian Hysteria - Circular dial puzzle
+// Day 1: Secret Entrance - Circular dial puzzle
 // A 100-position circular dial, starting at position 50
 
 #include "common.h"

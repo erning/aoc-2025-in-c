@@ -49,7 +49,7 @@ c23/
 
 | Day | Title | Algorithm |
 |-----|-------|-----------|
-| 1 | Historian Hysteria | Circular dial, modular arithmetic |
+| 1 | Secret Entrance | Circular dial, modular arithmetic |
 | 2 | Gift Shop | Number pattern generation (doubled, repeated) |
 | 3 | Lobby | Greedy digit selection |
 | 4 | Printing Department | Grid neighbor counting, cascade removal |
